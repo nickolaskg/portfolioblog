@@ -14,7 +14,7 @@ const socials = [
   {
     id: "footer-instagram",
     label: "Instagram",
-    href: "https://instagram.com/iconick",
+    href: "https://instagram.com/ahnickin",
     icon: InstagramIcon,
   },
   {

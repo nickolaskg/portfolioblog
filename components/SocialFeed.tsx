@@ -315,12 +315,12 @@ export default async function SocialFeed() {
             id="social-instagram"
             icon={InstagramIcon as React.FC<{ size: number }>}
             label="Instagram"
-            href="https://instagram.com/iconick"
+            href="https://instagram.com/ahnickin"
           >
             <ConnectPlaceholder
               message="Follow along for behind-the-scenes content, projects in progress, and life updates."
-              href="https://instagram.com/iconick"
-              cta="@iconick on Instagram"
+              href="https://instagram.com/ahnickin"
+              cta="@ahnickin on Instagram"
             />
           </SocialColumn>
 
