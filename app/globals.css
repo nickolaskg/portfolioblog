@@ -1,26 +1,418 @@
 @import "tailwindcss";
 
+/* ============================================================
+   DESIGN TOKENS — dark mode by default, light mode opt-in
+   ============================================================ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Brand */
+  --cyan-400: #22d3ee;
+  --cyan-500: #06b6d4;
+  --cyan-600: #0891b2;
+  --blue-400: #38bdf8;
+  --blue-500: #0ea5e9;
+  --blue-600: #0284c7;
+  --violet-500: #8b5cf6;
+
+  /* Dark (default) */
+  --bg-base:      #050b14;
+  --bg-surface:   #0d1b2a;
+  --bg-card:      #0f2132;
+  --bg-overlay:   rgba(13, 27, 42, 0.85);
+  --border-subtle:rgba(34, 211, 238, 0.12);
+  --border-dim:   rgba(34, 211, 238, 0.25);
+  --text-primary: #f0f9ff;
+  --text-secondary:#94a3b8;
+  --text-muted:   #64748b;
+  --accent:       #22d3ee;
+  --accent-glow:  rgba(34, 211, 238, 0.35);
+  --accent-dim:   rgba(34, 211, 238, 0.08);
+
+  /* Gradients */
+  --grad-accent: linear-gradient(135deg, #22d3ee 0%, #0ea5e9 50%, #8b5cf6 100%);
+  --grad-surface: linear-gradient(135deg, rgba(34,211,238,0.05) 0%, rgba(14,165,233,0.02) 100%);
+
+  /* Spacing */
+  --nav-h: 72px;
 }
 
+/* Light mode overrides */
+[data-theme="light"] {
+  --bg-base:      #f0f9ff;
+  --bg-surface:   #ffffff;
+  --bg-card:      #e0f2fe;
+  --bg-overlay:   rgba(240, 249, 255, 0.92);
+  --border-subtle:rgba(8, 145, 178, 0.15);
+  --border-dim:   rgba(8, 145, 178, 0.35);
+  --text-primary: #0c1b2a;
+  --text-secondary:#374151;
+  --text-muted:   #6b7280;
+  --accent:       #0891b2;
+  --accent-glow:  rgba(8, 145, 178, 0.25);
+  --accent-dim:   rgba(8, 145, 178, 0.08);
+}
+
+/* ============================================================
+   TAILWIND V4 THEME BRIDGE
+   ============================================================ */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg-base:       var(--bg-base);
+  --color-bg-surface:    var(--bg-surface);
+  --color-bg-card:       var(--bg-card);
+  --color-text-primary:  var(--text-primary);
+  --color-text-secondary:var(--text-secondary);
+  --color-text-muted:    var(--text-muted);
+  --color-accent:        var(--accent);
+
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ============================================================
+   BASE RESET
+   ============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* ============================================================
+   CUSTOM SCROLLBAR
+   ============================================================ */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb {
+  background: var(--border-dim);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ============================================================
+   TYPOGRAPHY
+   ============================================================ */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--text-primary);
+}
+
+.gradient-text {
+  background: var(--grad-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================================
+   GLASSMORPHISM UTILITIES
+   ============================================================ */
+.glass {
+  background: var(--bg-overlay);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle);
+}
+
+.glass-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.glass-card:hover {
+  border-color: var(--border-dim);
+  box-shadow: 0 8px 40px var(--accent-glow);
+  transform: translateY(-2px);
+}
+
+/* ============================================================
+   GLOW EFFECTS
+   ============================================================ */
+.glow-accent {
+  box-shadow: 0 0 20px var(--accent-glow), 0 0 60px var(--accent-glow);
+}
+
+.glow-text {
+  text-shadow: 0 0 20px var(--accent-glow);
+}
+
+/* ============================================================
+   BUTTON COMPONENTS
+   ============================================================ */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  background: var(--grad-accent);
+  color: #050b14;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 32px var(--accent-glow);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  border-radius: 9999px;
+  border: 1px solid var(--border-dim);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-ghost:hover {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  transform: translateY(-1px);
+}
+
+/* ============================================================
+   LAYOUT HELPERS
+   ============================================================ */
+.container-page {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.section-pad {
+  padding: 6rem 0;
+}
+
+.section-pad-sm {
+  padding: 4rem 0;
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-12px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px var(--accent-glow); }
+  50%       { box-shadow: 0 0 40px var(--accent-glow), 0 0 80px var(--accent-glow); }
+}
+
+@keyframes gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes scan-line {
+  0%   { top: -10%; }
+  100% { top: 110%; }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes typewriter-cursor {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.animate-float      { animation: float 6s ease-in-out infinite; }
+.animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+.animate-fade-in-up { animation: fade-in-up 0.6s ease forwards; }
+.animate-fade-in    { animation: fade-in 0.4s ease forwards; }
+
+/* ============================================================
+   GRID DOTS BACKGROUND
+   ============================================================ */
+.bg-grid-dots {
+  background-image: radial-gradient(circle, var(--border-subtle) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* ============================================================
+   NOISE TEXTURE OVERLAY
+   ============================================================ */
+.noise::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ============================================================
+   TAG BADGES
+   ============================================================ */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  background: var(--accent-dim);
+  color: var(--accent);
+  border: 1px solid var(--border-subtle);
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   BLOG / CONTENT PROSE
+   ============================================================ */
+.prose-portfolio {
+  color: var(--text-secondary);
+  line-height: 1.8;
+  max-width: 72ch;
+}
+.prose-portfolio h1, .prose-portfolio h2, .prose-portfolio h3 {
+  color: var(--text-primary);
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+.prose-portfolio p { margin-bottom: 1.25rem; }
+.prose-portfolio a { color: var(--accent); text-decoration: underline; }
+.prose-portfolio code {
+  background: var(--bg-card);
+  color: var(--accent);
+  padding: 0.2em 0.45em;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
+.prose-portfolio pre {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 1.25rem;
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+.prose-portfolio blockquote {
+  border-left: 3px solid var(--accent);
+  padding-left: 1rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ============================================================
+   SCROLLABLE CARDS TRACK
+   ============================================================ */
+.scroll-track {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.75rem;
+  scroll-snap-type: x mandatory;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scroll-track::-webkit-scrollbar { display: none; }
+.scroll-track > * { scroll-snap-align: start; flex-shrink: 0; }
+
+/* ============================================================
+   SELECTION COLOR
+   ============================================================ */
+::selection {
+  background: var(--accent);
+  color: #050b14;
+}
+
+/* ============================================================
+   FOCUS RING
+   ============================================================ */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ============================================================
+   RESPONSIVE HELPERS
+   ============================================================ */
+@media (max-width: 768px) {
+  .section-pad  { padding: 4rem 0; }
+  .section-pad-sm { padding: 2.5rem 0; }
+  .container-page { padding: 0 1rem; }
+}
+
+/* ============================================================
+   HOVER UTILITIES
+   ============================================================ */
+.hover-text-accent {
+  transition: color 0.2s ease !important;
+}
+.hover-text-accent:hover {
+  color: var(--accent) !important;
+}
+
+.hover-icon-link {
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease !important;
+}
+.hover-icon-link:hover {
+  color: var(--accent) !important;
+  border-color: var(--accent) !important;
+}
+
+.hover-icon-link-danger {
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease !important;
+}
+.hover-icon-link-danger:hover {
+  color: #f87171 !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+}
+
+.hover-bg-accent-dim {
+  transition: background 0.2s ease !important;
+}
+.hover-bg-accent-dim:hover {
+  background: var(--accent-dim) !important;
 }
